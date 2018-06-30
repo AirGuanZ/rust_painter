@@ -22,7 +22,7 @@ fn shade_pixel(sx: f64, sy: f64) -> char {
             let c = (-0.557 * sx + 0.743 * sy + 0.335 * sz) / (sx * sx + sy * sy + sz * sz).sqrt() * 1.025;
             CHARS[(c.min(1.0).max(0.0) * (CHARS.len() - 1) as f64) as usize]
         },
-        _           => ' '
+        _ => ' '
     }
 }
 
