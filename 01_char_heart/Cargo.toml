@@ -1,5 +1,5 @@
 [package]
-name = "rust"
+name = "char_heart"
 version = "0.1.0"
 authors = ["AirGuanZ <AirGuanZ@gmail.com>"]
 
