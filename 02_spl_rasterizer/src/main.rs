@@ -7,10 +7,14 @@ extern crate cgmath;
 extern crate image;
 
 type Real = f32;
+const REAL_MAX: Real = std::f32::MAX;
+
+type Mat2f = cgmath::Matrix2<Real>;
+type Mat3f = cgmath::Matrix3<Real>;
 type Mat4f = cgmath::Matrix4<Real>;
 type Vec2f = cgmath::Vector2<Real>;
 type Vec3f = cgmath::Vector3<Real>;
-type Vec4f = cgmath::Vector4<Real>;
+type Pnt3f = cgmath::Point3<Real>;
 
 use cgmath::{dot, vec2, vec3, vec4};
 
@@ -118,43 +122,50 @@ impl ScrBuf {
 struct Vertex {
     pub pos: Vec3f,
     pub nor: Vec3f,
-    pub tex: Vec2f,
+    pub tex: Vec3f,
 }
 
 struct Vtx2Pxl {
     pub spos: Vec2f,
     pub wpos: Vec3f,
     pub nor: Vec3f,
-    pub tex: Vec2f,
+    pub tex: Vec3f,
     pub depth: Real,
 }
 
-struct VertexShader<'a> {
+struct VertexShader {
     world: Mat4f,
     trans: Mat4f,
 
-    scr: &'a ScrBuf,
+    width: i32,
+    height: i32,
 }
 
-impl<'a> VertexShader<'a> {
-    pub fn new<'b>(world: &Mat4f, trans: &Mat4f, scr: &'b ScrBuf) -> VertexShader<'b> {
+impl VertexShader {
+    pub fn new(world: &Mat4f, trans: &Mat4f, scr: &ScrBuf) -> VertexShader {
         VertexShader {
             world: *world,
             trans: *trans,
-            scr,
+            width: scr.get_width(),
+            height: scr.get_height(),
         }
     }
 
     pub fn shade(&self, v: &Vertex) -> Vtx2Pxl {
+        use cgmath::InnerSpace;
+
         let epos = vec4(v.pos.x, v.pos.y, v.pos.z, 1.0);
         let hpos = self.trans * epos;
+
         Vtx2Pxl {
             spos: 0.5 * vec2(
-                (hpos.x / hpos.w + 1.0) * (self.scr.get_width() as Real - 1.0),
-                (hpos.y / hpos.w + 1.0) * (self.scr.get_height() as Real - 1.0),
+                (hpos.x / hpos.w + 1.0) * (self.width as Real - 1.0),
+                (hpos.y / hpos.w + 1.0) * (self.height as Real - 1.0),
             ),
             wpos: (self.world * epos).xyz(),
-            nor: (self.trans * vec4(v.nor.x, v.nor.y, v.nor.z, 0.0)).xyz(),
+            nor: (self.trans * vec4(v.nor.x, v.nor.y, v.nor.z, 0.0))
+                .xyz()
+                .normalize(),
             tex: v.tex,
             depth: hpos.z + 1.0,
         }
@@ -179,7 +190,7 @@ impl PixelShader {
         }
     }
 
-    fn shade(&self, pos: &Vec3f, nor: &Vec3f, tex: &Vec3f) -> Vec3f {
+    fn shade(&self, pos: &Vec3f, nor: &Vec3f, _tex: &Vec3f) -> Vec3f {
         use cgmath::InnerSpace;
 
         let mut light_color = vec3(0.0, 0.0, 0.0);
@@ -197,9 +208,136 @@ impl PixelShader {
     }
 }
 
+fn raster_pxl(
+    pxl_x: i32,
+    pxl_y: i32,
+    scr: &mut ScrBuf,
+    pxl: &PixelShader,
+    a: &Vtx2Pxl,
+    b: &Vtx2Pxl,
+    c: &Vtx2Pxl,
+) {
+    use cgmath::SquareMatrix;
+
+    let pnt = vec2(pxl_x as Real, (scr.get_height() - 1 - pxl_y) as Real);
+    let wgh = match (Mat2f::from_cols(a.spos - c.spos, b.spos - c.spos)).invert() {
+        Some(i) => i * (-c.spos + pnt),
+        None => {
+            panic!("Fatal error in vertex transformation");
+        }
+    };
+    let wgh = vec3(wgh.x, wgh.y, 1.0 - wgh.x - wgh.y);
+    if !(wgh.x >= 0.0 && wgh.y >= 0.0 && wgh.z >= 0.0) {
+        return;
+    }
+
+    let dp = dot(vec3(a.depth, b.depth, c.depth), wgh);
+    if dp <= 0.0 || dp >= scr.get_depth(pxl_x, pxl_y) {
+        return;
+    }
+
+    scr.set_color(
+        pxl_x,
+        pxl_y,
+        &pxl.shade(
+            &(Mat3f::from_cols(a.wpos, b.wpos, c.wpos) * wgh),
+            &(Mat3f::from_cols(a.nor, b.nor, c.nor) * wgh),
+            &(Mat3f::from_cols(a.tex, b.tex, c.tex) * wgh),
+        ),
+    );
+    scr.set_depth(pxl_x, pxl_y, dp);
+}
+
+fn tri_raster(scr: &mut ScrBuf, pxl: &PixelShader, a: &Vtx2Pxl, b: &Vtx2Pxl, c: &Vtx2Pxl) {
+    for pxl_x in 0..scr.get_width() {
+        for pxl_y in 0..scr.get_height() {
+            raster_pxl(pxl_x, pxl_y, scr, pxl, a, b, c);
+        }
+    }
+}
+
 fn main() {
-    let mut sb = ScrBuf::new(640, 480);
-    sb.set_color(0, 0, &vec3(0.0, 1.0, 1.0));
-    sb.set_depth(0, 0, 0.5);
+    use cgmath::SquareMatrix;
+
+    const SCR_W: i32 = 640;
+    const SCR_H: i32 = 480;
+
+    let mut sb = ScrBuf::new(SCR_W, SCR_H);
+    let world = Mat4f::identity();
+    let view = Mat4f::look_at(
+        Pnt3f::new(0.0, 0.0, -5.0),
+        Pnt3f::new(0.0, 0.0, 0.0),
+        vec3(0.0, 1.0, 0.0),
+    );
+    let proj = cgmath::perspective(
+        cgmath::Rad::<Real>(3.1415 / 5.0),
+        SCR_W as Real / SCR_H as Real,
+        0.1,
+        100.0,
+    );
+
+    let vtx_shader = VertexShader::new(&world, &(proj * view * world), &sb);
+    let pxl_shader = PixelShader::new(
+        vec![PointLight {
+            pos: vec3(0.5, 0.0, -0.3),
+            color: vec3(0.0, 1.0, 1.0),
+        }],
+        &vec3(0.8, 0.3, 0.1),
+    );
+
+    sb.clear(&vec3(0.0, 0.0, 0.0), REAL_MAX);
+
+    let tri0 = [
+        Vertex {
+            pos: vec3(-1.0, -1.0, 0.0),
+            nor: vec3(0.0, 0.0, -1.0),
+            tex: vec3(0.0, 0.0, 0.0),
+        },
+        Vertex {
+            pos: vec3(0.0, 1.0, 0.0),
+            nor: vec3(0.0, 0.0, -1.0),
+            tex: vec3(0.5, 1.0, 0.0),
+        },
+        Vertex {
+            pos: vec3(1.0, -1.0, 0.0),
+            nor: vec3(0.0, 0.0, -1.0),
+            tex: vec3(1.0, 0.0, 0.0),
+        },
+    ];
+
+    let tri1 = [
+        Vertex {
+            pos: vec3(-0.5, 0.2, -0.2),
+            nor: vec3(0.0, 0.0, -1.0),
+            tex: vec3(0.0, 0.0, 0.0),
+        },
+        Vertex {
+            pos: vec3(0.2, 0.75, -0.2),
+            nor: vec3(0.0, 0.0, -1.0),
+            tex: vec3(0.5, 1.0, 0.0),
+        },
+        Vertex {
+            pos: vec3(2.0, 0.1, -0.2),
+            nor: vec3(0.0, 0.0, -1.0),
+            tex: vec3(1.0, 0.0, 0.0),
+        },
+    ];
+
+    tri_raster(
+        &mut sb,
+        &pxl_shader,
+        &vtx_shader.shade(&tri0[0]),
+        &vtx_shader.shade(&tri0[1]),
+        &vtx_shader.shade(&tri0[2]),
+    );
+
+    tri_raster(
+        &mut sb,
+        &pxl_shader,
+        &vtx_shader.shade(&tri1[0]),
+        &vtx_shader.shade(&tri1[1]),
+        &vtx_shader.shade(&tri1[2]),
+    );
+
     sb.save_to_file("output.png");
 }
