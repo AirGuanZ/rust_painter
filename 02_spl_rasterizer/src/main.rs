@@ -32,10 +32,10 @@ struct VertexShader {
 }
 
 impl VertexShader {
-    pub fn new(world: &Mat4f, trans: &Mat4f, scr: &ScrBuf) -> VertexShader {
+    pub fn new(world: Mat4f, trans: Mat4f, scr: &ScrBuf) -> VertexShader {
         VertexShader {
-            world: *world,
-            trans: *trans,
+            world,
+            trans,
             width: scr.get_width(),
             height: scr.get_height(),
         }
@@ -101,7 +101,7 @@ impl PixelShader {
     }
 }
 
-fn raster_pxl(
+fn process_pixel(
     pxl_x: u32,
     pxl_y: u32,
     scr: &mut ScrBuf,
@@ -140,10 +140,10 @@ fn raster_pxl(
     scr.set_depth(pxl_x, pxl_y, dp);
 }
 
-fn tri_raster(scr: &mut ScrBuf, pxl: &PixelShader, a: &Vtx2Pxl, b: &Vtx2Pxl, c: &Vtx2Pxl) {
+fn draw_triangle(scr: &mut ScrBuf, pxl: &PixelShader, a: Vtx2Pxl, b: Vtx2Pxl, c: Vtx2Pxl) {
     for pxl_x in 0..scr.get_width() {
         for pxl_y in 0..scr.get_height() {
-            raster_pxl(pxl_x, pxl_y, scr, pxl, a, b, c);
+            process_pixel(pxl_x, pxl_y, scr, pxl, &a, &b, &c);
         }
     }
 }
@@ -180,56 +180,51 @@ fn main() {
         },
     ];
 
-    let vtx_shader = VertexShader::new(&world, &(proj * view * world), &sb);
+    let vtx_shader = VertexShader::new(world, proj * view * world, &sb);
     let pxl_shader = PixelShader::new(lights, &vec3(0.8, 0.3, 0.1));
 
     sb.clear(&vec3(0.0, 0.0, 0.0), REAL_MAX);
 
-    let tri0 = [
-        Vertex {
-            pos: vec3(-1.0, -1.0, 0.0),
-            nor: vec3(0.0, 0.0, -1.0),
-        },
-        Vertex {
-            pos: vec3(0.0, 1.0, 0.0),
-            nor: vec3(0.0, 0.0, -1.0),
-        },
-        Vertex {
-            pos: vec3(1.0, -1.0, 0.0),
-            nor: vec3(0.0, 0.0, -1.0),
-        },
+    let tris = [
+        [
+            Vertex {
+                pos: vec3(-1.0, -1.0, 0.0),
+                nor: vec3(0.0, 0.0, -1.0),
+            },
+            Vertex {
+                pos: vec3(0.0, 1.0, 0.0),
+                nor: vec3(0.0, 0.0, -1.0),
+            },
+            Vertex {
+                pos: vec3(1.0, -1.0, 0.0),
+                nor: vec3(0.0, 0.0, -1.0),
+            },
+        ],
+        [
+            Vertex {
+                pos: vec3(-0.5, 0.2, -0.2),
+                nor: vec3(0.0, 0.0, -1.0),
+            },
+            Vertex {
+                pos: vec3(0.2, 0.75, -0.2),
+                nor: vec3(0.0, 0.0, -1.0),
+            },
+            Vertex {
+                pos: vec3(2.0, 0.1, -0.2),
+                nor: vec3(0.0, 0.0, -1.0),
+            },
+        ],
     ];
 
-    let tri1 = [
-        Vertex {
-            pos: vec3(-0.5, 0.2, -0.2),
-            nor: vec3(0.0, 0.0, -1.0),
-        },
-        Vertex {
-            pos: vec3(0.2, 0.75, -0.2),
-            nor: vec3(0.0, 0.0, -1.0),
-        },
-        Vertex {
-            pos: vec3(2.0, 0.1, -0.2),
-            nor: vec3(0.0, 0.0, -1.0),
-        },
-    ];
-
-    tri_raster(
-        &mut sb,
-        &pxl_shader,
-        &vtx_shader.shade(&tri0[0]),
-        &vtx_shader.shade(&tri0[1]),
-        &vtx_shader.shade(&tri0[2]),
-    );
-
-    tri_raster(
-        &mut sb,
-        &pxl_shader,
-        &vtx_shader.shade(&tri1[0]),
-        &vtx_shader.shade(&tri1[1]),
-        &vtx_shader.shade(&tri1[2]),
-    );
+    for tri in &tris {
+        draw_triangle(
+            &mut sb,
+            &pxl_shader,
+            vtx_shader.shade(&tri[0]),
+            vtx_shader.shade(&tri[1]),
+            vtx_shader.shade(&tri[2]),
+        );
+    }
 
     sb.save_to_file("output.png");
 }
