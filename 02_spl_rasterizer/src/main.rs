@@ -4,120 +4,12 @@
 */
 
 extern crate cgmath;
-extern crate image;
 
-type Real = f32;
-const REAL_MAX: Real = std::f32::MAX;
+mod math;
+use math::*;
 
-type Mat2f = cgmath::Matrix2<Real>;
-type Mat3f = cgmath::Matrix3<Real>;
-type Mat4f = cgmath::Matrix4<Real>;
-type Vec2f = cgmath::Vector2<Real>;
-type Vec3f = cgmath::Vector3<Real>;
-type Pnt3f = cgmath::Point3<Real>;
-
-use cgmath::{dot, vec2, vec3, vec4};
-
-trait Clamp {
-    type ClampValue;
-    fn clamp(&self, min: Self::ClampValue, max: Self::ClampValue) -> Self;
-}
-
-impl Clamp for Real {
-    type ClampValue = Real;
-    fn clamp(&self, min: Real, max: Real) -> Self {
-        self.max(min).min(max)
-    }
-}
-
-impl Clamp for Vec3f {
-    type ClampValue = Real;
-    fn clamp(&self, min: Real, max: Real) -> Self {
-        vec3(
-            self.x.clamp(min, max),
-            self.y.clamp(min, max),
-            self.z.clamp(min, max),
-        )
-    }
-}
-
-struct ScrBuf {
-    width: i32,
-    height: i32,
-    color_buf: Vec<Vec3f>,
-    depth_buf: Vec<Real>,
-}
-
-impl ScrBuf {
-    fn buf_index(&self, x: i32, y: i32) -> usize {
-        assert!(0 <= x && x < self.width);
-        assert!(0 <= y && y < self.height);
-        (x * self.height + y) as usize
-    }
-
-    pub fn new(w: i32, h: i32) -> ScrBuf {
-        assert!(w > 0 && h > 0);
-        let mut rt = ScrBuf {
-            width: w,
-            height: h,
-            color_buf: Vec::new(),
-            depth_buf: Vec::new(),
-        };
-        let buf_size = (w * h) as usize;
-        rt.color_buf.resize(buf_size, vec3(0.0, 0.0, 0.0));
-        rt.depth_buf.resize(buf_size, 1.0);
-        rt
-    }
-
-    pub fn set_color(&mut self, x: i32, y: i32, c: &Vec3f) {
-        let index = self.buf_index(x, y);
-        self.color_buf[index] = *c;
-    }
-
-    pub fn set_depth(&mut self, x: i32, y: i32, d: Real) {
-        let index = self.buf_index(x, y);
-        self.depth_buf[index] = d;
-    }
-
-    pub fn get_color(&self, x: i32, y: i32) -> Vec3f {
-        let index = self.buf_index(x, y);
-        self.color_buf[index]
-    }
-
-    pub fn get_depth(&self, x: i32, y: i32) -> Real {
-        let index = self.buf_index(x, y);
-        self.depth_buf[index]
-    }
-
-    pub fn get_width(&self) -> i32 {
-        self.width
-    }
-
-    pub fn get_height(&self) -> i32 {
-        self.height
-    }
-
-    pub fn clear(&mut self, color: &Vec3f, depth: Real) {
-        for x in 0..self.width {
-            for y in 0..self.height {
-                self.set_color(x, y, color);
-                self.set_depth(x, y, depth);
-            }
-        }
-    }
-
-    pub fn save_to_file(&self, filename: &str) {
-        let img = image::ImageBuffer::from_fn(self.width as u32, self.height as u32, |x, y| {
-            let c = self.get_color(x as i32, y as i32);
-            image::Rgb([
-                (c.x * 255.0) as u8,
-                (c.y * 255.0) as u8,
-                (c.z * 255.0) as u8,
-            ])
-        });
-        img.save(std::path::Path::new(filename)).unwrap();
-    }
-}
+mod scrbuf;
+use scrbuf::ScrBuf;
 
 struct Vertex {
     pub pos: Vec3f,
@@ -135,8 +27,8 @@ struct VertexShader {
     world: Mat4f,
     trans: Mat4f,
 
-    width: i32,
-    height: i32,
+    width: u32,
+    height: u32,
 }
 
 impl VertexShader {
@@ -201,13 +93,17 @@ impl PixelShader {
             }
         }
 
-        light_color.clamp(0.0, 1.0)
+        vec3(
+            light_color.x.max(0.0).min(1.0),
+            light_color.y.max(0.0).min(1.0),
+            light_color.z.max(0.0).min(1.0),
+        )
     }
 }
 
 fn raster_pxl(
-    pxl_x: i32,
-    pxl_y: i32,
+    pxl_x: u32,
+    pxl_y: u32,
     scr: &mut ScrBuf,
     pxl: &PixelShader,
     a: &Vtx2Pxl,
@@ -238,7 +134,7 @@ fn raster_pxl(
         pxl_y,
         &pxl.shade(
             &(Mat3f::from_cols(a.wpos, b.wpos, c.wpos) * wgh),
-            &(Mat3f::from_cols(a.nor, b.nor, c.nor) * wgh)
+            &(Mat3f::from_cols(a.nor, b.nor, c.nor) * wgh),
         ),
     );
     scr.set_depth(pxl_x, pxl_y, dp);
@@ -255,10 +151,11 @@ fn tri_raster(scr: &mut ScrBuf, pxl: &PixelShader, a: &Vtx2Pxl, b: &Vtx2Pxl, c: 
 fn main() {
     use cgmath::SquareMatrix;
 
-    const SCR_W: i32 = 640;
-    const SCR_H: i32 = 480;
+    const SCR_W: u32 = 640;
+    const SCR_H: u32 = 480;
 
     let mut sb = ScrBuf::new(SCR_W, SCR_H);
+
     let world = Mat4f::identity();
     let view = Mat4f::look_at(
         Pnt3f::new(0.0, 0.0, -5.0),
