@@ -1,6 +1,6 @@
 /*
     简单的软件光栅渲染器，大概流程是：
-        vertex shader -> rasterizer -> pixel shader -> depth test
+        vertex shader -> rasterizer -> depth test --> pixel shader
 */
 
 extern crate cgmath;
@@ -82,21 +82,22 @@ impl PixelShader {
     fn shade(&self, pos: &Vec3f, nor: &Vec3f) -> Vec3f {
         use cgmath::InnerSpace;
 
-        let mut light_color = vec3(0.0, 0.0, 0.0);
+        let mut ret = vec3(0.0, 0.0, 0.0);
+
         for light in &self.lights {
             let dis_v = light.pos - pos;
             let dis = dis_v.magnitude();
             let lambert = dot(nor.normalize(), dis_v.normalize());
             if lambert > 0.0 {
-                light_color += lambert / dot(self.dis_fac, vec3(dis, dis * dis, dis * dis * dis))
+                ret += lambert / dot(self.dis_fac, vec3(dis, dis * dis, dis * dis * dis))
                     * light.color;
             }
         }
 
         vec3(
-            light_color.x.max(0.0).min(1.0),
-            light_color.y.max(0.0).min(1.0),
-            light_color.z.max(0.0).min(1.0),
+            ret.x.max(0.0).min(1.0),
+            ret.y.max(0.0).min(1.0),
+            ret.z.max(0.0).min(1.0),
         )
     }
 }
