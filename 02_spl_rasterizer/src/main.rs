@@ -122,14 +122,12 @@ impl ScrBuf {
 struct Vertex {
     pub pos: Vec3f,
     pub nor: Vec3f,
-    pub tex: Vec3f,
 }
 
 struct Vtx2Pxl {
     pub spos: Vec2f,
     pub wpos: Vec3f,
     pub nor: Vec3f,
-    pub tex: Vec3f,
     pub depth: Real,
 }
 
@@ -166,7 +164,6 @@ impl VertexShader {
             nor: (self.trans * vec4(v.nor.x, v.nor.y, v.nor.z, 0.0))
                 .xyz()
                 .normalize(),
-            tex: v.tex,
             depth: hpos.z + 1.0,
         }
     }
@@ -190,7 +187,7 @@ impl PixelShader {
         }
     }
 
-    fn shade(&self, pos: &Vec3f, nor: &Vec3f, _tex: &Vec3f) -> Vec3f {
+    fn shade(&self, pos: &Vec3f, nor: &Vec3f) -> Vec3f {
         use cgmath::InnerSpace;
 
         let mut light_color = vec3(0.0, 0.0, 0.0);
@@ -241,8 +238,7 @@ fn raster_pxl(
         pxl_y,
         &pxl.shade(
             &(Mat3f::from_cols(a.wpos, b.wpos, c.wpos) * wgh),
-            &(Mat3f::from_cols(a.nor, b.nor, c.nor) * wgh),
-            &(Mat3f::from_cols(a.tex, b.tex, c.tex) * wgh),
+            &(Mat3f::from_cols(a.nor, b.nor, c.nor) * wgh)
         ),
     );
     scr.set_depth(pxl_x, pxl_y, dp);
@@ -276,14 +272,19 @@ fn main() {
         100.0,
     );
 
+    let lights = vec![
+        PointLight {
+            pos: vec3(0.5, 0.0, -0.7),
+            color: vec3(0.0, 0.6, 0.6),
+        },
+        PointLight {
+            pos: vec3(-0.3, 0.0, -1.2),
+            color: vec3(0.8, 0.0, 0.0),
+        },
+    ];
+
     let vtx_shader = VertexShader::new(&world, &(proj * view * world), &sb);
-    let pxl_shader = PixelShader::new(
-        vec![PointLight {
-            pos: vec3(0.5, 0.0, -0.3),
-            color: vec3(0.0, 1.0, 1.0),
-        }],
-        &vec3(0.8, 0.3, 0.1),
-    );
+    let pxl_shader = PixelShader::new(lights, &vec3(0.8, 0.3, 0.1));
 
     sb.clear(&vec3(0.0, 0.0, 0.0), REAL_MAX);
 
@@ -291,17 +292,14 @@ fn main() {
         Vertex {
             pos: vec3(-1.0, -1.0, 0.0),
             nor: vec3(0.0, 0.0, -1.0),
-            tex: vec3(0.0, 0.0, 0.0),
         },
         Vertex {
             pos: vec3(0.0, 1.0, 0.0),
             nor: vec3(0.0, 0.0, -1.0),
-            tex: vec3(0.5, 1.0, 0.0),
         },
         Vertex {
             pos: vec3(1.0, -1.0, 0.0),
             nor: vec3(0.0, 0.0, -1.0),
-            tex: vec3(1.0, 0.0, 0.0),
         },
     ];
 
@@ -309,17 +307,14 @@ fn main() {
         Vertex {
             pos: vec3(-0.5, 0.2, -0.2),
             nor: vec3(0.0, 0.0, -1.0),
-            tex: vec3(0.0, 0.0, 0.0),
         },
         Vertex {
             pos: vec3(0.2, 0.75, -0.2),
             nor: vec3(0.0, 0.0, -1.0),
-            tex: vec3(0.5, 1.0, 0.0),
         },
         Vertex {
             pos: vec3(2.0, 0.1, -0.2),
             nor: vec3(0.0, 0.0, -1.0),
-            tex: vec3(1.0, 0.0, 0.0),
         },
     ];
 
