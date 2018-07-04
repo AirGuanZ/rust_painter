@@ -7,7 +7,7 @@ use std::ops::IndexMut;
 ///
 /// ```
 /// use renderer::buf::Buf2D;
-/// 
+///
 /// let mut buf = Buf2D::from_fn(128, 128, |x, y| {
 ///     if (x % 2 == 0) ^ (y % 2 == 0) {
 ///         255
@@ -15,7 +15,7 @@ use std::ops::IndexMut;
 ///         0
 ///     }
 /// });
-/// 
+///
 /// assert_eq!(*buf.at(0, 0), 0);
 /// assert_eq!(buf[(0, 1)], 255);
 ///

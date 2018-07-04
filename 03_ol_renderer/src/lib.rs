@@ -1,7 +1,9 @@
-//! A simple framework for off-line ray-tracing based rendering
+//! A simple framework for ray-tracing based rendering
 
-pub mod math;
 pub mod buf;
+pub mod material;
+pub mod math;
 
-pub use math::*;
 pub use buf::*;
+pub use material::{BxDF, BxDFType};
+pub use math::*;
