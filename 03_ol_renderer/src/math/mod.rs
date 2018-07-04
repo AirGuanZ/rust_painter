@@ -23,4 +23,3 @@ impl Clamp<Real> for Real {
         self.max(min_v).min(max_v)
     }
 }
-

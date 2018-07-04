@@ -11,14 +11,14 @@ pub enum BxDFType {
 
 pub trait BxDF {
     /// BxDF type. Returned value shall be consistent during the whole lifetime.
-    fn get_type() -> BxDFType;
+    fn get_type(&self) -> BxDFType;
 
     /// Compute the BxDF coefficient.
-    fn f(vin: &Vec3f, vout: &Vec3f) -> Color3f;
+    fn f(&self, vin: &Vec3f, vout: &Vec3f) -> Color3f;
 
     /// Sample directions
-    fn sample(v: &Vec3f, n: u32) -> Vec<Vec3f>;
+    fn sample(&self, v: &Vec3f, n: u32) -> Vec<Vec3f>;
 
     /// Probability density
-    fn pdf(v: &Vec3f, vsample: &Vec3f) -> Real;
+    fn pdf(&self, v: &Vec3f, vsample: &Vec3f) -> Real;
 }

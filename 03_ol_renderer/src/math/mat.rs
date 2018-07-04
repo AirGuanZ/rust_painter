@@ -8,6 +8,8 @@ use math::{Clamp, Real};
 pub use self::cgmath::ElementWise;
 pub use self::cgmath::InnerSpace;
 
+pub use self::cgmath::{dot, vec2, vec3, vec4};
+
 pub type Mat2f = Matrix2<Real>;
 pub type Mat3f = Matrix3<Real>;
 pub type Mat4f = Matrix4<Real>;
@@ -18,6 +20,14 @@ pub type Vec4f = Vector4<Real>;
 
 pub type Pnt2f = Point2<Real>;
 pub type Pnt3f = Point3<Real>;
+
+pub fn pnt2(x: Real, y: Real) -> Pnt2f {
+    Pnt2f::new(x, y)
+}
+
+pub fn pnt3(x: Real, y: Real, z: Real) -> Pnt3f {
+    Pnt3f::new(x, y, z)
+}
 
 pub fn reflect_vec(nor: Vec3f, in_vec: Vec3f) -> Vec3f {
     2.0 * nor.dot(in_vec) * nor - in_vec

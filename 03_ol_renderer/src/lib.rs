@@ -3,7 +3,4 @@
 pub mod buf;
 pub mod material;
 pub mod math;
-
-pub use buf::*;
-pub use material::{BxDF, BxDFType};
-pub use math::*;
+pub mod model;
