@@ -1,5 +1,9 @@
 //! Programming interfaces for object materials
 
+pub mod metal;
+
+pub use self::metal::Metal;
+
 use math::*;
 
 pub enum BxDFType {
