@@ -11,9 +11,7 @@ pub struct AABB {
 
 impl AABB {
     fn is_valid(&self) -> bool {
-        self.lower.x <= self.upper.x &&
-        self.lower.y <= self.upper.y &&
-        self.lower.z <= self.upper.z
+        self.lower.x <= self.upper.x && self.lower.y <= self.upper.y && self.lower.z <= self.upper.z
     }
 
     pub fn new(lower: Pnt3f, upper: Pnt3f) -> AABB {
@@ -46,7 +44,7 @@ impl AABB {
         assert!(self.is_valid());
         self
     }
-    
+
     pub fn to_aabb_bounding(&self) -> AABB {
         self.clone()
     }

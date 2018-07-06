@@ -1,7 +1,8 @@
 //! Ideal sphere
 
+use super::Ray;
+use super::AABB;
 use math::*;
-use model::AABB;
 
 /// Ideal sphere model
 #[derive(Clone)]
@@ -33,12 +34,12 @@ impl Sphere {
         self
     }
 
-    /// Is a given point in the interior of the sphere
+    /// Is a given point in the sphere
     pub fn is_point_in(&self, p: Pnt3f) -> bool {
         (self.centre - p).magnitude() < self.radius
     }
 
-    /// Is a given point in the outside of the sphere
+    /// Is a given point out of the sphere
     pub fn is_point_out(&self, p: Pnt3f) -> bool {
         (self.centre - p).magnitude() > self.radius
     }
@@ -51,7 +52,7 @@ impl Sphere {
     }
 
     /// Compute the nearest intersection with given ray
-    pub fn nearest_inct_point(&self, r: Ray) -> Option<(Real, Pnt3f)> {
+    pub fn nearest_inct(&self, r: Ray) -> Option<(Real, Pnt3f)> {
         // (p + td - c)^2 = R^2，求小的那个t
         let p_c = r.p - self.centre;
         let a = r.d.magnitude2();
@@ -78,6 +79,11 @@ impl Sphere {
         Some((t, r.t_to_point(t)))
     }
 
+    /// 将球面上的一点转为uv坐标
+    pub fn inct_to_uv(&self, _p: Pnt3f) -> (Real, Real) {
+        (0.0, 0.0) // TODO
+    }
+
     /// Axis-aligned bounding box
     pub fn to_aabb_bounding(&self) -> AABB {
         let rv = vec3(self.radius, self.radius, self.radius);
@@ -95,9 +101,18 @@ mod tests {
         let ray = Ray::new(pnt3(0.0, -4.0, 0.0), vec3(-1.0, 1.0, 0.0));
 
         assert!(sph.is_intersected(ray.clone()) == false);
-        match sph.nearest_inct_point(ray.clone()) {
+        match sph.nearest_inct(ray.clone()) {
             Some(_) => panic!("Lalala"),
             None => (),
         }
+    }
+
+    #[test]
+    fn inct_2() {
+        let sph = Sphere::new(pnt3(0.0, 0.0, 0.0), 1.0);
+        let ray = Ray::new(pnt3(0.0, -4.0, 0.0), vec3(0.0, 1.0, 0.0));
+
+        assert!(sph.is_intersected(ray.clone()));
+        let _ = sph.nearest_inct(ray.clone()).unwrap();
     }
 }

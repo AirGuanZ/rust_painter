@@ -13,8 +13,10 @@
 //! entities.
 //!
 
-mod aabb;
-mod sphere;
+pub mod aabb;
+pub mod ray;
+pub mod sphere;
 
-pub use model::aabb::AABB;
-pub use model::sphere::Sphere;
+pub use self::aabb::AABB;
+pub use self::ray::{Ray, RayT};
+pub use self::sphere::Sphere;

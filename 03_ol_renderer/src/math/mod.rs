@@ -2,13 +2,13 @@
 
 extern crate std;
 
-mod color;
-mod mat;
-mod ray;
+pub mod color;
+pub mod mat;
+pub mod model;
 
 pub use self::color::*;
 pub use self::mat::*;
-pub use self::ray::*;
+pub use self::model::*;
 
 pub type Real = f32;
 
