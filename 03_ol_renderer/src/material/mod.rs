@@ -1,9 +1,15 @@
 //! Programming interfaces for object materials
 
+pub mod cook_torrance;
+pub mod fresnel;
 pub mod metal;
 
-pub use self::metal::Metal;
+pub mod prelude {
+    pub use super::cook_torrance::*;
+    pub use super::metal::*;
+}
 
+pub use self::prelude::*;
 use math::*;
 
 pub enum BxDFType {

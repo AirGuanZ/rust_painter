@@ -1,6 +1,6 @@
 //! Entities in scene
 
-use material::BxDF;
+use material::*;
 use math::*;
 
 /// Intersection between a ray and an entity. Once the intersection
