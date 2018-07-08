@@ -18,17 +18,6 @@ pub type Vec2f = Vector2<Real>;
 pub type Vec3f = Vector3<Real>;
 pub type Vec4f = Vector4<Real>;
 
-pub type Pnt2f = Point2<Real>;
-pub type Pnt3f = Point3<Real>;
-
-pub fn pnt2(x: Real, y: Real) -> Pnt2f {
-    Pnt2f::new(x, y)
-}
-
-pub fn pnt3(x: Real, y: Real, z: Real) -> Pnt3f {
-    Pnt3f::new(x, y, z)
-}
-
 pub fn reflect_vec(nor: Vec3f, in_vec: Vec3f) -> Vec3f {
     2.0 * nor.dot(in_vec) * nor - in_vec
 }

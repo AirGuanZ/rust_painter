@@ -5,10 +5,9 @@ use math::*;
 
 /// Intersection between a ray and an entity. Once the intersection
 /// computed, the entity becomes totally useless.
-pub struct Intersection<'a> {
-    pub position: Pnt3f,
-    pub normal: Vec3f,
-    pub material: &'a Box<BxDF>,
+pub struct Intersection {
+    pub position: Vec3f,
+    pub material: Box<BxDF>,
 }
 
 /// (Renderable) Entities in scene.

@@ -1,12 +1,9 @@
 //! Programming interfaces for object materials
 
-pub mod cook_torrance;
-pub mod fresnel;
-pub mod metal;
+pub mod phong;
 
 pub mod prelude {
-    pub use super::cook_torrance::*;
-    pub use super::metal::*;
+    pub use super::phong::*;
 }
 
 pub use self::prelude::*;
@@ -24,7 +21,7 @@ pub trait BxDF {
     fn get_type(&self) -> BxDFType;
 
     /// Compute the BxDF coefficient.
-    fn f(&self, vin: &Vec3f, vout: &Vec3f) -> Color3f;
+    fn f(&self, vin: Vec3f, vout: Vec3f) -> Color3f;
 
     /// Sample directions
     fn sample(&self, v: &Vec3f, n: u32) -> Vec<Vec3f>;

@@ -11,7 +11,7 @@ pub use self::color::*;
 pub use self::mat::*;
 pub use self::model::*;
 
-pub use self::cgmath::{Angle, Deg, Rad};
+pub use self::cgmath::{Angle, ApproxEq, Deg, Rad};
 
 pub type Radf = Rad<Real>;
 pub type Degf = Deg<Real>;

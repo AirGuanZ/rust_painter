@@ -1,10 +1,11 @@
 //! Implementation of p = p0 + t * d
 
+use std::ops::Mul;
 use math::{mat::*, Clamp, Real};
 
 #[derive(Clone)]
 pub struct Ray {
-    pub p: Pnt3f,
+    pub p: Vec3f,
     pub d: Vec3f,
 }
 
@@ -14,15 +15,26 @@ pub struct RayT {
     pub t: Real,
 }
 
+impl Mul<Ray> for Mat4f {
+    type Output = Ray;
+
+    fn mul(self, r: Ray) -> Ray {
+        Ray::new(
+            (self * vec4(r.p.x, r.p.y, r.p.z, 1.0)).xyz(),
+            (self * vec4(r.d.x, r.d.y, r.d.z, 0.0)).xyz(),
+        )
+    }
+}
+
 impl Ray {
-    pub fn new(p: Pnt3f, d: Vec3f) -> Ray {
+    pub fn new(p: Vec3f, d: Vec3f) -> Ray {
         Ray {
             p,
             d: d.normalize(),
         }
     }
 
-    pub fn t_to_point(&self, t: Real) -> Pnt3f {
+    pub fn t_to_point(&self, t: Real) -> Vec3f {
         self.p + t * self.d
     }
 }
@@ -37,7 +49,7 @@ impl Clamp<Real> for RayT {
 }
 
 impl RayT {
-    pub fn new(p: Pnt3f, d: Vec3f, t: Real) -> RayT {
+    pub fn new(p: Vec3f, d: Vec3f, t: Real) -> RayT {
         RayT {
             r: Ray::new(p, d),
             t,
