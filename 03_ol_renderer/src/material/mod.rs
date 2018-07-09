@@ -20,6 +20,9 @@ pub trait BxDF {
     /// BxDF type. Returned value shall be consistent during the whole lifetime.
     fn get_type(&self) -> BxDFType;
 
+    /// Ambient illumination
+    fn ambient(&self) -> Color3f;
+
     /// Compute the BxDF coefficient.
     fn f(&self, vin: Vec3f, vout: Vec3f) -> Color3f;
 

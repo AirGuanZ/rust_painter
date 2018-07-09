@@ -12,7 +12,7 @@ pub struct PerspectiveCamera {
 }
 
 impl Camera for PerspectiveCamera {
-    fn scr_to_ray(&self, scr_point: Vec3f) -> Ray {
+    fn scr_to_ray(&self, scr_point: Vec2f) -> Ray {
         let pnt = self.scr_o + scr_point.x * self.scr_x + scr_point.y * self.scr_y;
         Ray::new(pnt, (pnt - self.eye).normalize())
     }
@@ -32,7 +32,7 @@ impl PerspectiveCamera {
         PerspectiveCamera {
             eye,
             scr_o: eye + near_dis * dir,
-            scr_x: scr_width / 2.0 * (dir.cross(scr_y)),
+            scr_x: scr_width / 2.0 * (dir.cross(scr_y).normalize()),
             scr_y,
         }
     }

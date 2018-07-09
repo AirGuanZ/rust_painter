@@ -13,7 +13,7 @@ pub struct WhittedRenderer {
     entities: Vec<Box<Entity>>,
     lights: Vec<Box<Light>>,
     background: Color3f,
-    max_render_depth: u32,
+    max_depth: u32,
 }
 
 impl Renderer for WhittedRenderer {
@@ -24,7 +24,7 @@ impl Renderer for WhittedRenderer {
 
 impl WhittedRenderer {
     fn render_d(&self, r: Ray, depth: u32) -> Color3f {
-        if depth > self.max_render_depth {
+        if depth > self.max_depth {
             return self.background;
         }
 
@@ -59,11 +59,24 @@ impl WhittedRenderer {
 
         // Indirect illumination
         let ref_dir = reflect_vec(inct.normal, -r.d);
-        let ref_ray = Ray::new(inct.position, ref_dir);
+        let ref_ray = Ray::new(inct.position + inct.normal * 1e-6, ref_dir);
         let indirect_illu = self.render_d(ref_ray, depth + 1)
-            .mul_element_wise(inct.material.f(-r.d, ref_dir))
-            * dot(inct.normal, ref_dir);
+            .mul_element_wise(inct.material.f(-r.d, ref_dir));
 
-        direct_illu + indirect_illu
+        direct_illu + indirect_illu + inct.material.ambient()
+    }
+
+    pub fn new(
+        entities: Vec<Box<Entity>>,
+        lights: Vec<Box<Light>>,
+        background: Color3f,
+        max_depth: u32,
+    ) -> WhittedRenderer {
+        WhittedRenderer {
+            entities,
+            lights,
+            background,
+            max_depth,
+        }
     }
 }

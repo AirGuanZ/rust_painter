@@ -16,9 +16,9 @@ pub use self::cgmath::{Angle, ApproxEq, Deg, Rad};
 pub type Radf = Rad<Real>;
 pub type Degf = Deg<Real>;
 
-pub type Real = f32;
+pub type Real = f64;
 
-pub const REAL_MAX: Real = std::f32::MAX;
+pub const REAL_MAX: Real = std::f64::MAX;
 pub const REAL_PI: Real = 3.1415926535;
 
 pub trait Clamp<T> {

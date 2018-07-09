@@ -22,10 +22,14 @@ impl BxDF for Phong {
         BxDFType::BRDF
     }
 
+    fn ambient(&self) -> Color3f {
+        self.ambient
+    }
+
     fn f(&self, vin: Vec3f, vout: Vec3f) -> Color3f {
         let r = reflect_vec(self.local_y, vin.normalize());
         let alpha = dot(r, vout).max(0.0);
-        self.specular * alpha.powf(self.shininess) + self.ambient
+        self.specular * alpha.powf(self.shininess)
     }
 
     fn sample(&self, _v: &Vec3f, n: u32) -> Vec<Vec3f> {

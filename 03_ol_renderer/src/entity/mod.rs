@@ -1,5 +1,7 @@
 //! Entities in scene
 
+pub mod sphere;
+
 use material::*;
 use math::*;
 

@@ -69,7 +69,7 @@ impl Sphere {
         let t1 = (-b + delta) * recip_2_a;
         let t2 = (-b - delta) * recip_2_a;
 
-        if t1 <= Real::default_epsilon() && t2 <= Real::default_epsilon() {
+        if t1 <= 0.0 && t2 <= 0.0 {
             return None;
         }
 
