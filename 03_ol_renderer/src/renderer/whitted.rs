@@ -23,11 +23,11 @@ impl Renderer for WhittedRenderer {
 
     fn is_visible(&self, p1: Vec3f, p2: Vec3f) -> bool {
         let d = p2 - p1;
-        let dis = d.magnitude() + 1e-6;
+        let dis = d.magnitude() - 1e-6;
         let r = Ray::new(p1, d);
         for ent in &self.entities {
             if let Some(i) = ent.has_inct(r.clone()) {
-                if i.0 > dis {
+                if i.0 < dis {
                     return false;
                 }
             }
