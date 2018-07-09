@@ -1,8 +1,10 @@
 //! Renderer interface
 
+pub mod path_tracing;
 pub mod whitted;
 
 pub mod prelude {
+    pub use super::path_tracing::*;
     pub use super::whitted::*;
 }
 

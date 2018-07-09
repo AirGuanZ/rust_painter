@@ -25,21 +25,20 @@ impl Renderer for WhittedRenderer {
         let d = p2 - p1;
         let dis = d.magnitude() - 1e-6;
         let r = Ray::new(p1, d);
-        for ent in &self.entities {
+        !self.entities.iter().any(|ent|{
             if let Some(i) = ent.has_inct(r.clone()) {
-                if i.0 < dis {
-                    return false;
-                }
+                i.0 < dis
+            } else {
+                false
             }
-        }
-        true
+        })
     }
 }
 
 impl WhittedRenderer {
     fn render_d(&self, r: Ray, depth: u32) -> Color3f {
         if depth > self.max_depth {
-            return self.background;
+            return BLACK;
         }
 
         let mut inct: Option<Intersection> = None;

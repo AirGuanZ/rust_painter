@@ -1,4 +1,4 @@
-/// Perspective (Pinhole) camera model
+//! Perspective (Pinhole) camera model
 
 use camera::*;
 use math::*;
