@@ -69,7 +69,7 @@ impl Sphere {
         let t1 = (-b + delta) * recip_2_a;
         let t2 = (-b - delta) * recip_2_a;
 
-        if t1 <= 0.0 && t2 <= 0.0 {
+        if t1 <= Real::default_epsilon() && t2 <= Real::default_epsilon() {
             return None;
         }
 
@@ -164,7 +164,7 @@ mod tests {
             Real::default_epsilon(),
             Real::default_max_relative()
         ));
-        
+
         assert!(sph.inct_to_local_z(vec3(-1.0, 0.0, 0.0)).relative_eq(
             &vec3(0.0, 1.0, 0.0),
             Real::default_epsilon(),

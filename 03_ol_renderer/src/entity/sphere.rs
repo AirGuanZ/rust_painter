@@ -20,7 +20,9 @@ impl Entity for Sphere {
             let local_x = sph.inct_to_local_x(p);
             let (u, v) = sph.inct_to_uv(p);
             return Intersection {
+                t,
                 position: p,
+                normal: local_y,
                 material: fm(p, local_x, local_y, u, v),
             };
         }

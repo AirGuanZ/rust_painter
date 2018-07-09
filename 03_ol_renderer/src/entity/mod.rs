@@ -6,8 +6,21 @@ use math::*;
 /// Intersection between a ray and an entity. Once the intersection
 /// computed, the entity becomes totally useless.
 pub struct Intersection {
+    pub t: Real,
     pub position: Vec3f,
+    pub normal: Vec3f,
     pub material: Box<BxDF>,
+}
+
+impl Intersection {
+    pub fn nearer(self, other: Intersection) -> Intersection {
+        assert!(self.t >= 0.0 && other.t >= 0.0);
+        if self.t < other.t {
+            self
+        } else {
+            other
+        }
+    }
 }
 
 /// (Renderable) Entities in scene.
