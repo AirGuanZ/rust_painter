@@ -79,7 +79,7 @@ impl Sphere {
         Some((t, r.t_to_point(t)))
     }
 
-    /// 将球面上的一点转为uv坐标
+    /// 将球面上的一点转为球面参数坐标
     pub fn inct_to_uv(&self, _p: Vec3f) -> (Real, Real) {
         (0.0, 0.0) // TODO
     }

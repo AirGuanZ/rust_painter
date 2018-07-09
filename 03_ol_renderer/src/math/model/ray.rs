@@ -3,12 +3,15 @@
 use std::ops::Mul;
 use math::{mat::*, Clamp, Real};
 
+/// Start point & direction: p0 + t * d
 #[derive(Clone)]
 pub struct Ray {
     pub p: Vec3f,
     pub d: Vec3f,
 }
 
+/// Ray and end point
+/// End point = if t < 0.0 { r.p + t * r.d } else { Non-existent }
 #[derive(Clone)]
 pub struct RayT {
     pub r: Ray,
@@ -58,15 +61,5 @@ impl RayT {
 
     pub fn from_ray(r: Ray, t: Real) -> RayT {
         RayT { r, t }
-    }
-
-    pub fn is_nearer_than(&self, other: &RayT) -> bool {
-        if self.t < 0.0 {
-            false
-        } else if other.t < 0.0 {
-            true
-        } else {
-            self.t < other.t
-        }
     }
 }
