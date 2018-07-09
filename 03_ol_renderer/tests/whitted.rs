@@ -5,7 +5,7 @@ use renderer::*;
 
 const IMG_W: u32 = 640;
 const IMG_H: u32 = 480;
-const CAM_W: Real = 1.0;
+const CAM_W: Real = 0.3;
 const CAM_H: Real = CAM_W * (IMG_H as Real) / (IMG_W as Real);
 
 #[test]
