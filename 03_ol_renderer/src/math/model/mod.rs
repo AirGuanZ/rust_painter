@@ -17,6 +17,10 @@ pub mod aabb;
 pub mod ray;
 pub mod sphere;
 
-pub use self::aabb::AABB;
-pub use self::ray::{Ray, RayT};
-pub use self::sphere::Sphere;
+pub mod prelude {
+    pub use super::aabb::*;
+    pub use super::ray::*;
+    pub use super::sphere::*;
+}
+
+pub use self::prelude::*;

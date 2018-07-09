@@ -1,7 +1,7 @@
 extern crate image;
 extern crate renderer;
 
-use renderer::math::*;
+use renderer::*;
 
 const IMG_W: u32 = 640;
 const IMG_H: u32 = 480;
@@ -10,11 +10,6 @@ const CAM_H: Real = CAM_W * (IMG_H as Real) / (IMG_W as Real);
 
 #[test]
 fn test_whitted_renderer() {
-    use renderer::camera::*;
-    use renderer::entity::*;
-    use renderer::material::prelude::*;
-    use renderer::renderer::*;
-
     let camera = PerspectiveCamera::new(
         vec3(-3.0, 4.0, -8.0),
         vec3(0.0, 0.0, 0.0),

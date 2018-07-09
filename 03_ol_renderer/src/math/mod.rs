@@ -7,11 +7,14 @@ pub mod color;
 pub mod mat;
 pub mod model;
 
-pub use self::color::*;
-pub use self::mat::*;
-pub use self::model::*;
+pub mod prelude {
+    pub use super::cgmath::{Angle, ApproxEq, Deg, Rad};
+    pub use super::color::*;
+    pub use super::mat::*;
+    pub use super::model::ray::*;
+}
 
-pub use self::cgmath::{Angle, ApproxEq, Deg, Rad};
+pub use self::prelude::*;
 
 pub type Radf = Rad<Real>;
 pub type Degf = Deg<Real>;

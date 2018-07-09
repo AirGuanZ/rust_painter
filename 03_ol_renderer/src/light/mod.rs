@@ -1,5 +1,12 @@
 //! Light sources
 
+pub mod point;
+
+pub mod prelude {
+    pub use super::point::*;
+}
+
+pub use self::prelude::*;
 use math::*;
 
 pub struct LightSample {

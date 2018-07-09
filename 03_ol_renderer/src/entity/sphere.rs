@@ -35,7 +35,7 @@ where
         }
     }
 
-    fn to_aabb_bounding(&self) -> AABB {
+    fn to_aabb_bounding(&self) -> model::AABB {
         self.sph.to_aabb_bounding()
     }
 }

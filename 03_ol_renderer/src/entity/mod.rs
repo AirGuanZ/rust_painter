@@ -2,6 +2,11 @@
 
 pub mod sphere;
 
+pub mod prelude {
+    pub use super::sphere::*;
+}
+
+pub use self::prelude::*;
 use material::*;
 use math::*;
 
@@ -34,5 +39,5 @@ impl Intersection {
 /// an visivle light source, or anything else that can be in the rendered scene.
 pub trait Entity {
     fn inct(&self, r: Ray) -> Option<Intersection>;
-    fn to_aabb_bounding(&self) -> AABB;
+    fn to_aabb_bounding(&self) -> model::AABB;
 }
