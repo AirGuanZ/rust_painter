@@ -50,21 +50,47 @@ impl PathTracer {
             }
         });
 
-        if inct.is_none() {
-            return self.background;
+        match inct {
+            None => self.background,
+            Some(i) => {
+                let pos = i.position + i.normal * 1e-6;
+                self.direct_illu(pos, -r.d, i.normal, &i.material, depth)
+                    + self.indirect_illu(pos, -r.d, i.normal, &i.material, depth)
+            }
         }
-        let inct = inct.unwrap();
-
-        self.direct_illu(inct.position, -r.d, &inct.material, depth)
-            + self.indirect_illu(inct.position, -r.d, &inct.material, depth)
     }
 
-    fn direct_illu(&self, p: Vec3f, vin: Vec3f, material: &Box<BxDF>, depth: u32) -> Color3f {
+    fn direct_illu(
+        &self,
+        pnt: Vec3f,
+        dir_in: Vec3f,
+        normal: Vec3f,
+        material: &Box<BxDF>,
+        depth: u32,
+    ) -> Color3f {
         color3(0.0, 0.0, 0.0)
     }
 
-    fn indirect_illu(&self, p: Vec3f, vin: Vec3f, material: &Box<BxDF>, depth: u32) -> Color3f {
-        color3(0.0, 0.0, 0.0)
+    fn indirect_illu(
+        &self,
+        pnt: Vec3f,
+        dir_in: Vec3f,
+        normal: Vec3f,
+        material: &Box<BxDF>,
+        depth: u32,
+    ) -> Color3f {
+        material
+            .sample(&dir_in, self.spp)
+            .iter()
+            .fold(BLACK, |acc, sam_dir| {
+                let ref_ray = Ray::new(pnt, sam_dir.clone());
+                let rendered = self.render_d(ref_ray, depth + 1);
+                let bxdf = material.f(dir_in, sam_dir.clone());
+                let nacc = rendered.mul_element_wise(bxdf)
+                    * dot(*sam_dir, normal)
+                    * material.pdf(&dir_in, sam_dir);
+                acc + nacc
+            }) / self.spp as Real
     }
 
     pub fn new(
