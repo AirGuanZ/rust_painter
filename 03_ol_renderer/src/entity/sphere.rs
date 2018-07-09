@@ -34,6 +34,10 @@ where
             None
         }
     }
+    
+    fn has_inct(&self, r: Ray) -> Option<(Real, Vec3f)> {
+        self.sph.nearest_inct(r)
+    }
 
     fn to_aabb_bounding(&self) -> model::AABB {
         self.sph.to_aabb_bounding()

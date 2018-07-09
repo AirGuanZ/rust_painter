@@ -6,12 +6,14 @@ extern crate std;
 pub mod color;
 pub mod mat;
 pub mod model;
+pub mod sample;
 
 pub mod prelude {
     pub use super::cgmath::{Angle, ApproxEq, Deg, Rad};
     pub use super::color::*;
     pub use super::mat::*;
     pub use super::model::ray::*;
+    pub use super::sample::*;
 }
 
 pub use self::prelude::*;

@@ -11,7 +11,7 @@ const CAM_H: Real = CAM_W * (IMG_H as Real) / (IMG_W as Real);
 #[test]
 fn test_whitted_renderer() {
     let camera = PerspectiveCamera::new(
-        vec3(-3.0, 4.0, -8.0),
+        vec3(5.0, 0.0, 5.0),
         vec3(0.0, 0.0, 0.0),
         vec3(0.0, 1.0, 0.0),
         CAM_W,
@@ -19,28 +19,30 @@ fn test_whitted_renderer() {
         1.0,
     );
 
-    let entities: Vec<std::boxed::Box<renderer::entity::Entity + 'static>> =
-        vec![Box::new(sphere::Sphere::new(
-            vec3(0.0, 0.0, 0.0),
-            0.4,
-            Box::new(|_, loc_x, loc_y, _, _| {
-                Box::new(Phong::new(
-                    color3(0.1, 0.1, 0.1),
-                    color3(0.3, 0.7, 0.4),
-                    loc_x,
-                    loc_y,
-                    2.2,
-                ))
-            }),
-        ))];
+    let entities: Vec<Box<Entity>> = vec![Box::new(sphere::Sphere::new(
+        vec3(0.0, 0.0, 0.0),
+        0.4,
+        Box::new(|_, loc_x, loc_y, _, _| {
+            Box::new(Phong::new(
+                color3(0.1, 0.1, 0.1),
+                color3(0.3, 0.7, 0.7),
+                loc_x,
+                loc_y,
+                1.5,
+            ))
+        }),
+    ))];
 
-    let lights = vec![];
+    let lights: Vec<Box<Light>> = vec![Box::new(PointLight::new(
+        vec3(0.0, 7.0, 4.0),
+        vec3(0.0, 1.0, 1.0),
+    ))];
 
     let renderer = WhittedRenderer::new(entities, lights, color3(0.0, 0.0, 0.0), 5);
 
     let img = image::ImageBuffer::from_fn(IMG_W, IMG_H, |x, y| {
         let x = 2.0 * x as Real / (IMG_W - 1) as Real - 1.0;
-        let y = 2.0 * y as Real / (IMG_H - 1) as Real - 1.0;
+        let y = -2.0 * y as Real / (IMG_H - 1) as Real + 1.0;
         let ray = camera.scr_to_ray(vec2(x, y));
         let c = renderer.render(ray).clamp(0.0, 1.0);
         image::Rgb {

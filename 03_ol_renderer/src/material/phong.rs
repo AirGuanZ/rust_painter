@@ -35,7 +35,7 @@ impl BxDF for Phong {
     fn sample(&self, _v: &Vec3f, n: u32) -> Vec<Vec3f> {
         let mut ret = Vec::with_capacity(n as usize);
         for _ in 0..n {
-            ret.push(self.trans * Self::locally_sample());
+            ret.push(self.trans * hemisphere_uniform());
         }
         ret
     }
@@ -46,13 +46,6 @@ impl BxDF for Phong {
 }
 
 impl Phong {
-    fn locally_sample() -> Vec3f {
-        let theta = rand::random::<Real>() * 0.5 * REAL_PI;
-        let phi = rand::random::<Real>() * 2.0 * REAL_PI;
-        let ct = theta.cos();
-        vec3(ct * phi.sin(), theta.sin(), ct * phi.cos())
-    }
-
     pub fn new(
         ambient: Color3f,
         specular: Color3f,

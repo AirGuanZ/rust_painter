@@ -20,6 +20,20 @@ impl Renderer for WhittedRenderer {
     fn render(&self, r: Ray) -> Color3f {
         self.render_d(r, 0)
     }
+
+    fn is_visible(&self, p1: Vec3f, p2: Vec3f) -> bool {
+        let d = p2 - p1;
+        let dis = d.magnitude() + 1e-6;
+        let r = Ray::new(p1, d);
+        for ent in &self.entities {
+            if let Some(i) = ent.has_inct(r.clone()) {
+                if i.0 > dis {
+                    return false;
+                }
+            }
+        }
+        true
+    }
 }
 
 impl WhittedRenderer {
@@ -47,7 +61,7 @@ impl WhittedRenderer {
         let mut direct_illu = BLACK;
         for light in &self.lights {
             let sam = light.sample_to(1, inct.position);
-            if sam.is_empty() {
+            if sam.is_empty() || !self.is_visible(sam[0].ray.p, inct.position) {
                 continue;
             }
             let sam = &sam[0];
