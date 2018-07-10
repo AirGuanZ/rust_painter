@@ -16,6 +16,8 @@
 
 ## 03 Offline Renderer
 
-一个不那么极简的光线追踪渲染器，打算稍微扩展之
+一个不那么极简的光线追踪渲染器，目前实现了Whitted模型和Path Tracing，打算稍微扩展之
 
-![ol_renderer](./docs/pics/03_ol_renderer.png)
+![ol_renderer](./docs/pics/03_whitted.png)
+
+![ol_renderer](./docs/pics/03_pathtracing.png)

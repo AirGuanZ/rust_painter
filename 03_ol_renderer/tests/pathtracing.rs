@@ -3,13 +3,14 @@ extern crate renderer;
 
 use renderer::*;
 
-const IMG_W: u32 = 240;
-const IMG_H: u32 = 200;
+const IMG_W: u32 = 640;
+const IMG_H: u32 = 480;
 const CAM_W: Real = 1.0;
 const CAM_H: Real = CAM_W * (IMG_H as Real) / (IMG_W as Real);
+const ITER_CNT: u32 = 4096;
 
 #[test]
-fn test_whitted_renderer() {
+fn test_path_tracer() {
     let camera = PerspectiveCamera::new(
         vec3(5.0, 3.0, 0.0),
         vec3(0.0, 0.0, 0.0),
@@ -29,11 +30,11 @@ fn test_whitted_renderer() {
                     color3(0.3, 0.9, 0.7),
                     loc_x,
                     loc_y,
-                    1.5,
+                    1.0,
                 ))
             }),
         )),
-        /*Box::new(sphere::Sphere::new(
+        Box::new(sphere::Sphere::new(
             vec3(0.4, 0.1, 0.2),
             0.1,
             Box::new(|_, loc_x, loc_y, _, _| {
@@ -42,10 +43,10 @@ fn test_whitted_renderer() {
                     color3(0.0, 1.0, 0.0),
                     loc_x,
                     loc_y,
-                    1.2,
+                    1.0,
                 ))
             }),
-        )),*/
+        )),
         Box::new(sphere::Sphere::new(
             vec3(0.0, -5.0, 0.0),
             4.5,
@@ -66,13 +67,16 @@ fn test_whitted_renderer() {
         Box::new(PointLight::new(vec3(4.0, 10.0, 4.0), vec3(1.0, 1.0, 1.0))),
     ];
 
-    let renderer = WhittedRenderer::new(entities, lights, color3(0.0, 0.0, 0.0), 5);
+    let renderer = PathTracer::new(entities, lights, BLACK, 3, 1);
 
     let img = image::ImageBuffer::from_fn(IMG_W, IMG_H, |x, y| {
         let x = 2.0 * x as Real / (IMG_W - 1) as Real - 1.0;
         let y = -2.0 * y as Real / (IMG_H - 1) as Real + 1.0;
         let ray = camera.scr_to_ray(vec2(x, y));
-        let c = renderer.render(ray.clone()).clamp(0.0, 1.0);
+
+        let c = (0..ITER_CNT).fold(BLACK, |acc, _| acc + renderer.render(ray.clone()));
+        let c = (c / ITER_CNT as Real).clamp(0.0, 1.0);
+
         image::Rgb {
             data: [
                 (c.r() * 255.0) as u8,
@@ -81,5 +85,5 @@ fn test_whitted_renderer() {
             ],
         }
     });
-    img.save("./target/whitted.png").unwrap();
+    img.save("./target/pathtracing.png").unwrap();
 }
