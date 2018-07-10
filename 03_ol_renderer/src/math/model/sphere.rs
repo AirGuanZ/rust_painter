@@ -80,8 +80,20 @@ impl Sphere {
     }
 
     /// 将球面上的一点转为球面参数坐标
-    pub fn inct_to_uv(&self, _p: Vec3f) -> (Real, Real) {
-        (0.0, 0.0) // TODO
+    pub fn inct_to_uv(&self, p: Vec3f) -> (Real, Real) {
+        let nor = (p - self.centre).normalize();
+
+        if nor.y.relative_eq(&1.0, 1e-6, 1e-6) {
+            return (0.0, 1.0);
+        }
+
+        if nor.y.relative_eq(&-1.0, 1e-6, 1e-6) {
+            return (0.0, 0.0);
+        }
+
+        let v = nor.y.asin() / REAL_PI + 0.5;
+        let u = nor.z.atan2(nor.x) / (2.0 * REAL_PI) + 0.5;
+        (u, v)
     }
 
     pub fn inct_to_local_x(&self, p: Vec3f) -> Vec3f {

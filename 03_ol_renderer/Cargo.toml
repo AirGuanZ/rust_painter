@@ -3,6 +3,14 @@ name = "renderer"
 version = "0.1.0"
 authors = ["AirGuanZ <AirGuanZ@gmail.com>"]
 
+[[example]]
+name = "whitted"
+path = "./examples/whitted.rs"
+
+[[example]]
+name = "path_tracing"
+path = "./examples/pathtracing.rs"
+
 [dependencies]
 cgmath = { version = "0.16.1", features = ["swizzle"] }
 image = "0.19.0"

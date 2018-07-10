@@ -10,8 +10,7 @@ const CAM_W: Real = 0.4;
 const CAM_H: Real = CAM_W * (IMG_H as Real) / (IMG_W as Real);
 const ITER_CNT: u32 = 128;
 
-#[test]
-fn test_path_tracer() {
+fn main() {
     use rayon::prelude::*;
 
     let camera = PerspectiveCamera::new(

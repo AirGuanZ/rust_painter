@@ -3,13 +3,12 @@ extern crate renderer;
 
 use renderer::*;
 
-const IMG_W: u32 = 240;
-const IMG_H: u32 = 200;
+const IMG_W: u32 = 640;
+const IMG_H: u32 = 480;
 const CAM_W: Real = 1.0;
 const CAM_H: Real = CAM_W * (IMG_H as Real) / (IMG_W as Real);
 
-#[test]
-fn test_whitted_renderer() {
+fn main() {
     let camera = PerspectiveCamera::new(
         vec3(5.0, 3.0, 0.0),
         vec3(0.0, 0.0, 0.0),
@@ -33,7 +32,7 @@ fn test_whitted_renderer() {
                 ))
             }),
         )),
-        /*Box::new(sphere::Sphere::new(
+        Box::new(sphere::Sphere::new(
             vec3(0.4, 0.1, 0.2),
             0.1,
             Box::new(|_, loc_x, loc_y, _, _| {
@@ -45,7 +44,7 @@ fn test_whitted_renderer() {
                     1.2,
                 ))
             }),
-        )),*/
+        )),
         Box::new(sphere::Sphere::new(
             vec3(0.0, -5.0, 0.0),
             4.5,
