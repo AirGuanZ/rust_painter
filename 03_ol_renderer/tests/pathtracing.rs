@@ -1,16 +1,19 @@
 extern crate image;
+extern crate rayon;
 extern crate renderer;
 
 use renderer::*;
 
 const IMG_W: u32 = 640;
 const IMG_H: u32 = 480;
-const CAM_W: Real = 1.0;
+const CAM_W: Real = 0.4;
 const CAM_H: Real = CAM_W * (IMG_H as Real) / (IMG_W as Real);
-const ITER_CNT: u32 = 4096;
+const ITER_CNT: u32 = 1024;
 
 #[test]
 fn test_path_tracer() {
+    use rayon::prelude::*;
+
     let camera = PerspectiveCamera::new(
         vec3(5.0, 3.0, 0.0),
         vec3(0.0, 0.0, 0.0),
@@ -74,7 +77,10 @@ fn test_path_tracer() {
         let y = -2.0 * y as Real / (IMG_H - 1) as Real + 1.0;
         let ray = camera.scr_to_ray(vec2(x, y));
 
-        let c = (0..ITER_CNT).fold(BLACK, |acc, _| acc + renderer.render(ray.clone()));
+        let c: Color3f = (0..ITER_CNT)
+            .into_par_iter()
+            .map(|_| renderer.render(ray.clone()))
+            .sum();
         let c = (c / ITER_CNT as Real).clamp(0.0, 1.0);
 
         image::Rgb {

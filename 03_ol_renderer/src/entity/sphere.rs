@@ -16,7 +16,7 @@ where
 impl<M, FM> Entity for Sphere<M, FM>
 where
     M: BxDF + 'static,
-    FM: Fn(Vec3f, Vec3f, Vec3f, Real, Real) -> Box<M>,
+    FM: Sync + Fn(Vec3f, Vec3f, Vec3f, Real, Real) -> Box<M>,
 {
     fn inct(&self, r: Ray) -> Option<Intersection> {
         if let Some((t, p)) = self.sph.nearest_inct(r) {

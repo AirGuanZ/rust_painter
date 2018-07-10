@@ -14,7 +14,7 @@ pub struct LightSample {
     pub color: Color3f,
 }
 
-pub trait Light {
+pub trait Light: Sync {
     fn sample(&self, n: u32) -> Vec<LightSample>;
     fn pdf(&self, ray: Ray) -> Real;
 

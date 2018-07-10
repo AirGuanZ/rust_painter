@@ -7,3 +7,4 @@ authors = ["AirGuanZ <AirGuanZ@gmail.com>"]
 cgmath = { version = "0.16.1", features = ["swizzle"] }
 image = "0.19.0"
 rand = "0.5.3"
+rayon = "1.0.1"

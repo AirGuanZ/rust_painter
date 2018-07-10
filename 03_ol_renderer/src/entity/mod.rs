@@ -37,7 +37,7 @@ impl Intersection {
 /// An entity doesn't need to be a single 'object'.
 /// An entity can also be an BVH tree of other entities,
 /// an visivle light source, or anything else that can be in the rendered scene.
-pub trait Entity {
+pub trait Entity: Sync {
     fn inct(&self, r: Ray) -> Option<Intersection>;
 
     fn has_inct(&self, r: Ray) -> Option<(Real, Vec3f)>;
