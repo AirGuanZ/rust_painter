@@ -8,7 +8,7 @@ const IMG_W: u32 = 640;
 const IMG_H: u32 = 480;
 const CAM_W: Real = 0.4;
 const CAM_H: Real = CAM_W * (IMG_H as Real) / (IMG_W as Real);
-const ITER_CNT: u32 = 1024;
+const ITER_CNT: u32 = 128;
 
 #[test]
 fn test_path_tracer() {

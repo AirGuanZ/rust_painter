@@ -13,9 +13,13 @@ pub struct PointLight {
 impl Light for PointLight {
     fn sample(&self, n: u32) -> Vec<LightSample> {
         (0..n)
-            .map(|_| LightSample {
-                ray: Ray::new(self.pos, sphere_uniform()),
-                color: self.color,
+            .map(|_| {
+                let dir = sphere_uniform();
+                LightSample {
+                    light_normal: dir,
+                    ray: Ray::new(self.pos, dir),
+                    color: self.color,
+                }
             })
             .collect()
     }
@@ -28,6 +32,7 @@ impl Light for PointLight {
         let dir = (dst_pnt - self.pos).normalize();
         (0..n)
             .map(|_| LightSample {
+                light_normal: dir,
                 ray: Ray::new(self.pos, dir),
                 color: self.color,
             })

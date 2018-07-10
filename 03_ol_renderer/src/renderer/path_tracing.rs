@@ -80,7 +80,7 @@ impl PathTracer {
         let sam = &sam[0];
 
         let color = material.f(dir_in, -sam.ray.d).mul_element_wise(sam.color)
-            * dot(-sam.ray.d, normal).max(0.0);
+            * dot(-sam.ray.d, normal).max(0.0) * dot(sam.ray.d, sam.light_normal).max(0.0);
         color * self.lights.len() as Real / light.pdf_to(sam.ray.clone(), pnt)
     }
 

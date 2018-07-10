@@ -10,6 +10,7 @@ pub use self::prelude::*;
 use math::*;
 
 pub struct LightSample {
+    pub light_normal: Vec3f,
     pub ray: Ray,
     pub color: Color3f,
 }
