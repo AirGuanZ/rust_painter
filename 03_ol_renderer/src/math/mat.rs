@@ -20,6 +20,30 @@ pub type Vec2f = Vector2<Real>;
 pub type Vec3f = Vector3<Real>;
 pub type Vec4f = Vector4<Real>;
 
+pub const ZERO_VEC3: Vec3f = Vec3f {
+    x: 0.0,
+    y: 0.0,
+    z: 0.0,
+};
+
+pub const X_VEC3: Vec3f = Vec3f {
+    x: 1.0,
+    y: 0.0,
+    z: 0.0,
+};
+
+pub const Y_VEC3: Vec3f = Vec3f {
+    x: 0.0,
+    y: 1.0,
+    z: 0.0,
+};
+
+pub const Z_VEC3: Vec3f = Vec3f {
+    x: 0.0,
+    y: 0.0,
+    z: 1.0,
+};
+
 pub fn reflect_vec(nor: Vec3f, in_vec: Vec3f) -> Vec3f {
     2.0 * nor.dot(in_vec) * nor - in_vec
 }

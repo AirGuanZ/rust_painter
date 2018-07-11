@@ -89,32 +89,36 @@ impl Triangle {
         ).determinant()
     }
 
-    pub fn new(a: Vec3f, b: Vec3f, c: Vec3f) -> Triangle {
+    pub fn new(vtx: [Vec3f; 3]) -> Triangle {
+        Triangle { vtx }
+    }
+
+    pub fn new_abc(a: Vec3f, b: Vec3f, c: Vec3f) -> Triangle {
         Triangle { vtx: [a, b, c] }
     }
 
-    pub fn is_intersected(&self, r: Ray) -> bool {
+    pub fn is_intersected(&self, r: Ray) -> Option<Real> {
         let a = self.deter_a(&r);
         if a.relative_eq(&0.0, 1e-6, 1e-6) {
-            return false;
+            return None;
         }
 
         let t = self.deter_t(&r) / a;
         if t <= 0.0 {
-            return false;
+            return None;
         }
 
         let beta = self.deter_beta(&r) / a;
         if beta < 0.0 || beta > 1.0 {
-            return false;
+            return None;
         }
 
         let gamma = self.deter_gamma(&r) / a;
         if gamma < 0.0 || gamma > 1.0 {
-            return false;
+            return None;
         }
 
-        true
+        Some(t)
     }
 
     pub fn nearest_inct(&self, r: Ray) -> Option<TriangleIntersection> {

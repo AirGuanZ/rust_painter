@@ -38,8 +38,6 @@ pub mod prelude {
         fn inct(&self, r: Ray) -> Option<Intersection>;
 
         fn has_inct(&self, r: Ray) -> Option<(Real, Vec3f)>;
-
-        fn to_aabb_bounding(&self) -> model::AABB;
     }
 
 }

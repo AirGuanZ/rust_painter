@@ -1,7 +1,6 @@
 //! Ideal sphere
 
 use super::Ray;
-use super::AABB;
 use math::*;
 
 /// Ideal sphere model
@@ -114,12 +113,6 @@ impl Sphere {
         }
         -ly.y * vec3(ly.x, 0.0, ly.z).normalize()
             + (ly.x * ly.x + ly.z * ly.z).sqrt() * vec3(0.0, 1.0, 0.0)
-    }
-
-    /// Axis-aligned bounding box
-    pub fn to_aabb_bounding(&self) -> AABB {
-        let rv = vec3(self.radius, self.radius, self.radius);
-        AABB::new(self.centre - rv, self.centre + rv)
     }
 }
 
