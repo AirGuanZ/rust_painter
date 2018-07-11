@@ -24,6 +24,10 @@ pub fn reflect_vec(nor: Vec3f, in_vec: Vec3f) -> Vec3f {
     2.0 * nor.dot(in_vec) * nor - in_vec
 }
 
+pub fn max_elememt_wise_vec3(a: Vec3f, b: Vec3f) -> Vec3f {
+    vec3(a.x.max(b.x), a.y.max(b.y), a.z.max(b.z))
+}
+
 impl Clamp<Real> for Vec2f {
     fn clamp(&self, min_v: Real, max_v: Real) -> Self {
         Vec2f {

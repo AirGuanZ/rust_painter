@@ -8,6 +8,10 @@ use math::Real;
 pub type Color3f = Vector3<Real>;
 pub type Color4f = Vector4<Real>;
 
+pub fn max_elememt_wise_color3(a: Color3f, b: Color3f) -> Color3f {
+    color3(a.x.max(b.x), a.y.max(b.y), a.z.max(b.z))
+}
+
 pub trait ColorTrait3<T> {
     fn r(&self) -> T;
     fn g(&self) -> T;

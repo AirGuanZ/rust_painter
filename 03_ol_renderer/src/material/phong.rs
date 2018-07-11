@@ -27,6 +27,9 @@ impl BxDF for Phong {
     }
 
     fn f(&self, vin: Vec3f, vout: Vec3f) -> Color3f {
+        if dot(vin, self.local_y) <= 0.0 || dot(vout, self.local_y) <= 0.0 {
+            return BLACK;
+        }
         let r = reflect_vec(self.local_y, vin.normalize());
         let alpha = dot(r, vout).max(0.0);
         self.specular * alpha.powf(self.shininess)
