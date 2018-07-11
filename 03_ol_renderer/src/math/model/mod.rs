@@ -16,11 +16,13 @@
 pub mod aabb;
 pub mod ray;
 pub mod sphere;
+pub mod triangle;
 
 pub mod prelude {
     pub use super::aabb::*;
     pub use super::ray::*;
     pub use super::sphere::*;
+    pub use super::triangle::*;
 }
 
 pub use self::prelude::*;
