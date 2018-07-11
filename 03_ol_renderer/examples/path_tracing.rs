@@ -8,7 +8,7 @@ const IMG_W: u32 = 640;
 const IMG_H: u32 = 480;
 const CAM_W: Real = 0.4;
 const CAM_H: Real = CAM_W * (IMG_H as Real) / (IMG_W as Real);
-const ITER_CNT: u32 = 128;
+const ITER_CNT: u32 = 8192;
 
 fn main() {
     use rayon::prelude::*;
@@ -27,46 +27,31 @@ fn main() {
             vec3(0.0, 0.0, 0.0),
             0.4,
             Box::new(|_, loc_x, loc_y, _, _| {
-                Box::new(Phong::new(
-                    color3(0.1, 0.1, 0.1),
-                    color3(0.3, 0.9, 0.7),
-                    loc_x,
-                    loc_y,
-                    1.0,
-                ))
+                Box::new(Phong::new(BLACK, color3(0.4, 0.7, 0.8), loc_x, loc_y, 1.0))
             }),
         )),
         Box::new(sphere::Sphere::new(
             vec3(0.4, 0.1, 0.2),
             0.1,
             Box::new(|_, loc_x, loc_y, _, _| {
-                Box::new(Phong::new(
-                    color3(0.1, 0.1, 0.1),
-                    color3(0.0, 1.0, 0.0),
-                    loc_x,
-                    loc_y,
-                    1.0,
-                ))
+                Box::new(Phong::new(BLACK, color3(0.0, 1.0, 0.0), loc_x, loc_y, 1.0))
             }),
         )),
         Box::new(sphere::Sphere::new(
             vec3(0.0, -5.0, 0.0),
             4.5,
             Box::new(|_, loc_x, loc_y, _, _| {
-                Box::new(Phong::new(
-                    color3(0.1, 0.1, 0.1),
-                    color3(0.6, 0.4, 0.9),
-                    loc_x,
-                    loc_y,
-                    1.0,
-                ))
+                Box::new(Phong::new(BLACK, color3(1.0, 0.4, 0.4), loc_x, loc_y, 1.0))
             }),
         )),
     ];
 
     let lights: Vec<Box<Light>> = vec![
-        Box::new(PointLight::new(vec3(4.0, 10.0, 4.0), vec3(1.0, 1.0, 1.0))),
-        Box::new(PointLight::new(vec3(4.0, 10.0, 4.0), vec3(1.0, 1.0, 1.0))),
+        Box::new(PointLight::new(vec3(4.0, 10.0, 4.0), color3(0.0, 1.0, 1.0))),
+        Box::new(PointLight::new(
+            vec3(1.0, 1.0, -1.0),
+            color3(0.8, 0.0, 0.0),
+        )),
     ];
 
     let renderer = PathTracer::new(entities, lights, BLACK, 3, 1);
