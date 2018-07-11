@@ -92,7 +92,7 @@ impl Sphere {
         }
 
         let v = nor.y.asin() / REAL_PI + 0.5;
-        let u = nor.z.atan2(nor.x) / (2.0 * REAL_PI) + 0.5;
+        let u = nor.x.atan2(nor.z) / (2.0 * REAL_PI) + 0.5;
         (u, v)
     }
 

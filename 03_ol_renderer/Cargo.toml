@@ -9,7 +9,7 @@ path = "./examples/whitted.rs"
 
 [[example]]
 name = "path_tracing"
-path = "./examples/pathtracing.rs"
+path = "./examples/path_tracing.rs"
 
 [dependencies]
 cgmath = { version = "0.16.1", features = ["swizzle"] }

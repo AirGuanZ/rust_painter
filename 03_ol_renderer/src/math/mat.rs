@@ -7,6 +7,8 @@ use math::{Clamp, Real};
 
 pub use self::cgmath::ElementWise;
 pub use self::cgmath::InnerSpace;
+pub use self::cgmath::Matrix;
+pub use self::cgmath::SquareMatrix;
 
 pub use self::cgmath::{dot, vec2, vec3, vec4};
 
