@@ -8,7 +8,7 @@ const IMG_W: u32 = 640;
 const IMG_H: u32 = 480;
 const CAM_W: Real = 0.4;
 const CAM_H: Real = CAM_W * (IMG_H as Real) / (IMG_W as Real);
-const ITER_CNT: u32 = 8192;
+const ITER_CNT: u32 = 10000;
 
 fn main() {
     use rayon::prelude::*;
@@ -31,32 +31,31 @@ fn main() {
             }),
         )),
         Box::new(sphere::Sphere::new(
-            vec3(0.4, 0.1, 0.2),
+            vec3(0.32, -0.27, 0.13),
             0.1,
-            Box::new(|_, loc_x, loc_y, _, _| {
-                Box::new(Phong::new(BLACK, color3(0.0, 1.0, 0.0), loc_x, loc_y, 1.0))
-            }),
+            Box::new(|_, _, loc_y, _, _| Box::new(DiffuseLight::new(loc_y, color3(0.0, 1.4, 0.0)))),
         )),
         Box::new(sphere::Sphere::new(
             vec3(0.0, -5.0, 0.0),
-            4.5,
+            4.7,
             Box::new(|_, loc_x, loc_y, _, _| {
-                Box::new(Phong::new(BLACK, color3(1.0, 0.4, 0.4), loc_x, loc_y, 1.0))
+                Box::new(Phong::new(BLACK, color3(1.0, 0.6, 0.4), loc_x, loc_y, 1.0))
             }),
         )),
     ];
 
     let lights: Vec<Box<Light>> = vec![
         Box::new(PointLight::new(vec3(4.0, 10.0, 4.0), color3(0.0, 1.0, 1.0))),
-        Box::new(PointLight::new(
-            vec3(1.0, 1.0, -1.0),
-            color3(0.8, 0.0, 0.0),
-        )),
+        Box::new(PointLight::new(vec3(1.0, 1.0, -1.0), color3(0.8, 0.0, 0.0))),
     ];
 
     let renderer = PathTracer::new(entities, lights, BLACK, 3, 1);
 
     let img = image::ImageBuffer::from_fn(IMG_W, IMG_H, |x, y| {
+        if x == IMG_W - 1 {
+            println!("Finished: {}%", y as Real / (IMG_H - 1) as Real * 100.0);
+        }
+
         let x = 2.0 * x as Real / (IMG_W - 1) as Real - 1.0;
         let y = -2.0 * y as Real / (IMG_H - 1) as Real + 1.0;
         let ray = camera.scr_to_ray(vec2(x, y));

@@ -34,7 +34,7 @@ where
             None
         }
     }
-    
+
     fn has_inct(&self, r: Ray) -> Option<(Real, Vec3f)> {
         self.sph.nearest_inct(r)
     }

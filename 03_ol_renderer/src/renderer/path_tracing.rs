@@ -58,6 +58,7 @@ impl PathTracer {
                 let pos = i.position + i.normal * 1e-4;
                 self.direct_illu(pos, -r.d, i.normal, &i.material)
                     + self.indirect_illu(pos, -r.d, i.normal, &i.material, depth)
+                    + i.material.emit(-r.d)
             }
         }
     }
@@ -80,7 +81,8 @@ impl PathTracer {
         let sam = &sam[0];
 
         let color = material.f(dir_in, -sam.ray.d).mul_element_wise(sam.color)
-            * dot(-sam.ray.d, normal).max(0.0) * dot(sam.ray.d, sam.light_normal).max(0.0);
+            * dot(-sam.ray.d, normal).max(0.0)
+            * dot(sam.ray.d, sam.light_normal).max(0.0);
         color * self.lights.len() as Real / light.pdf_to(sam.ray.clone(), pnt)
     }
 
@@ -91,6 +93,9 @@ impl PathTracer {
         normal: Vec3f,
         material: &Box<BxDF>,
     ) -> Color3f {
+        if self.lights.is_empty() {
+            return BLACK;
+        }
         let mut rng = rand::thread_rng();
         (0..self.spp).fold(BLACK, |acc, _| {
             acc + self.light_sample_once(pnt, dir_in, normal, material, &mut rng)

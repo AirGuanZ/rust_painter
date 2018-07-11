@@ -1,10 +1,12 @@
 //! Programming interfaces for object materials
 
 pub mod combine;
+pub mod diffuse_light;
 pub mod phong;
 
 pub mod prelude {
     pub use super::combine::*;
+    pub use super::diffuse_light::*;
     pub use super::phong::*;
     use math::*;
 
@@ -22,6 +24,9 @@ pub mod prelude {
 
         /// Ambient illumination
         fn ambient(&self) -> Color3f;
+
+        /// Radiance emitted to given direction
+        fn emit(&self, v: Vec3f) -> Color3f;
 
         /// Compute the BxDF coefficient.
         fn f(&self, vin: Vec3f, vout: Vec3f) -> Color3f;

@@ -26,6 +26,10 @@ impl BxDF for Phong {
         self.ambient
     }
 
+    fn emit(&self, _v: Vec3f) -> Color3f {
+        BLACK
+    }
+
     fn f(&self, vin: Vec3f, vout: Vec3f) -> Color3f {
         if dot(vin, self.local_y) <= 0.0 || dot(vout, self.local_y) <= 0.0 {
             return BLACK;
