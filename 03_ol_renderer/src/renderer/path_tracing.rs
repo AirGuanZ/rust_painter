@@ -58,7 +58,7 @@ impl PathTracer {
                 let pos = i.position + i.normal * 1e-4;
                 self.direct_illu(pos, -r.d, i.normal, &i.material)
                     + self.indirect_illu(pos, -r.d, i.normal, &i.material, depth)
-                    + i.material.emit(-r.d)
+                    + i.material.emit(-r.d) + i.material.ambient()
             }
         }
     }

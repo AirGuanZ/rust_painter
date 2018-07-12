@@ -1,9 +1,11 @@
 //! Entities in scene
 
 pub mod sphere;
+pub mod triangle;
 
 pub mod prelude {
     pub use super::sphere::*;
+    pub use super::triangle::*;
     use material::*;
     use math::*;
 

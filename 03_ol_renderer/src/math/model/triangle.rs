@@ -114,7 +114,7 @@ impl Triangle {
         }
 
         let gamma = self.deter_gamma(&r) / a;
-        if gamma < 0.0 || gamma > 1.0 {
+        if gamma < 0.0 || gamma > 1.0 - beta {
             return None;
         }
 
@@ -138,7 +138,7 @@ impl Triangle {
         }
 
         let gamma = self.deter_gamma(&r) / a;
-        if gamma < 0.0 || gamma > 1.0 {
+        if gamma < 0.0 || gamma > 1.0 - beta {
             return None;
         }
 
